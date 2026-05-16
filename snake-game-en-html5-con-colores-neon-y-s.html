@@ -1,0 +1,203 @@
+# Snake Game Neon - Juego Completo HTML5
+
+Te presento un **Snake Game completo con estilo neon**, listo para jugar en cualquier navegador.
+
+```html
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Snake Game Neon</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: #0a0e27;
+            font-family: 'Arial', sans-serif;
+            color: #00ff88;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+
+        h1 {
+            font-size: 3em;
+            text-shadow: 0 0 20px #00ff88, 0 0 40px #00ff88;
+            animation: glow 2s ease-in-out infinite;
+        }
+
+        @keyframes glow {
+            0%, 100% { text-shadow: 0 0 20px #00ff88, 0 0 40px #00ff88; }
+            50% { text-shadow: 0 0 30px #00ff88, 0 0 60px #00ff88, 0 0 80px #00ff88; }
+        }
+
+        .game-wrapper {
+            display: flex;
+            gap: 30px;
+            align-items: flex-start;
+        }
+
+        canvas {
+            border: 3px solid #00ff88;
+            background: #000814;
+            box-shadow: 0 0 20px #00ff88, 0 0 40px #ff006e, inset 0 0 20px rgba(0, 255, 136, 0.1);
+            border-radius: 5px;
+        }
+
+        .stats-panel {
+            background: rgba(0, 255, 136, 0.05);
+            border: 2px solid #00ff88;
+            border-radius: 8px;
+            padding: 20px;
+            min-width: 200px;
+            box-shadow: 0 0 20px rgba(0, 255, 136, 0.3);
+        }
+
+        .stat {
+            display: flex;
+            justify-content: space-between;
+            margin: 15px 0;
+            font-size: 1.2em;
+            color: #00ff88;
+            text-shadow: 0 0 10px #00ff88;
+        }
+
+        .stat-label {
+            font-weight: bold;
+            color: #ff006e;
+        }
+
+        .stat-value {
+            color: #00d9ff;
+            font-weight: bold;
+            text-shadow: 0 0 10px #00d9ff;
+        }
+
+        .controls {
+            background: rgba(0, 255, 136, 0.05);
+            border: 2px solid #00ff88;
+            border-radius: 8px;
+            padding: 15px;
+            min-width: 200px;
+            box-shadow: 0 0 20px rgba(0, 255, 136, 0.3);
+        }
+
+        .controls h3 {
+            color: #ff006e;
+            margin-bottom: 10px;
+            text-shadow: 0 0 10px #ff006e;
+        }
+
+        .control-item {
+            color: #00ff88;
+            margin: 8px 0;
+            font-size: 0.9em;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            flex-direction: column;
+        }
+
+        button {
+            padding: 12px 20px;
+            background: linear-gradient(135deg, #00ff88, #00d9ff);
+            border: 2px solid #00ff88;
+            color: #000814;
+            font-size: 1em;
+            font-weight: bold;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-shadow: 0 0 5px #000814;
+            box-shadow: 0 0 15px rgba(0, 255, 136, 0.5);
+        }
+
+        button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 25px rgba(0, 255, 136, 0.8), 0 0 40px #ff006e;
+            text-shadow: 0 0 10px #000814;
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        .footer {
+            color: #00ff88;
+            text-align: center;
+            margin-top: 20px;
+            font-size: 0.9em;
+            text-shadow: 0 0 10px #00ff88;
+        }
+
+        .high-score {
+            color: #ffbe0b;
+            font-size: 1.1em;
+            text-shadow: 0 0 10px #ffbe0b;
+        }
+
+        @media (max-width: 900px) {
+            .game-wrapper {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🐍 SNAKE NEON 🐍</h1>
+        
+        <div class="game-wrapper">
+            <canvas id="gameCanvas" width="400" height="400"></canvas>
+            
+            <div>
+                <div class="stats-panel">
+                    <h3 style="color: #ff006e; margin-bottom: 15px; text-shadow: 0 0 10px #ff006e;">PUNTUACIÓN</h3>
+                    <div class="stat">
+                        <span class="stat-label">Puntos:</span>
+                        <span class="stat-value" id="score">0</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-label">Comidas:</span>
+                        <span class="stat-value" id="food-count">0</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-label">Longitud:</span>
+                        <span class="stat-value" id="length">1</span>
+                    </div>
+                    <div class="stat high-score">
+                        <span class="stat-label">Record:</span>
+                        <span class="stat-value" id="high-score">0</span>
+                    </div>
+                </div>
+
+                <div class="controls">
+                    <h3>CONTROLES</h3>
+                    <div class="control-item">⬆️ Arriba: W o ↑</div>
+                    <div class="control-item">⬇️ Abajo: S o ↓</div>
+                    <div class="control-item">⬅️ Izquierda: A o ←</div>
+                    <div class="control-item">➡️ Derecha: D o →</div>
+                    <div class="control-item">⏸️ Pausa: ESPACIO</div>
+                    
+                    <div class="button-group">
+                        <button id="startBtn" onclick="toggleGame()">INICIAR JUEGO</button>
+                        <button id="resetBtn" onclick="resetGame()">NUEVO JUEGO</button>
+                    </div>
+                
